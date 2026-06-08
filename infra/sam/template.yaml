@@ -39,6 +39,9 @@ Parameters:
     Type: String
   DataBucketName:
     Type: String
+  CorsAllowOrigins:
+    Type: CommaDelimitedList
+    Default: "http://localhost:3000"
 
 Resources:
   QueryApi:
@@ -51,8 +54,7 @@ Resources:
           - Authorization
         AllowMethods:
           - POST
-        AllowOrigins:
-          - "*"
+        AllowOrigins: !Ref CorsAllowOrigins
 
   AppFunction:
     Type: AWS::Serverless::Function

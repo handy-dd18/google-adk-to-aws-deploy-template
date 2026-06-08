@@ -64,6 +64,7 @@ AWS Strands Agentsで構築したマルチエージェントAIアプリを、AWS
    - `terraform output athena_results_bucket_name`
    - `terraform output s3_data_bucket_name`
 3. `infra/sam/samconfig.toml` の `parameter_overrides` を更新
+   - 本番は `CorsAllowOrigins` を実ドメインに制限
 4. SAM で Lambda/API Gateway をデプロイ
    - `cd infra/sam && sam build --template-file template.yaml`
    - `sam deploy --config-env default`
