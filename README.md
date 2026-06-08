@@ -1,4 +1,4 @@
-# aws-strands-agent-to-aws-deploy-template
+# google-adk-to-aws-deploy-template
 AWS Strands Agentsを利用してAWS上にAIアプリケーションを構築するテンプレート
 
 ## 目的
