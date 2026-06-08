@@ -1,5 +1,5 @@
 {
-  "name": "strands-aws-template",
+  "name": "structured-data-agent-sample",
   "image": "mcr.microsoft.com/devcontainers/python:3.12",
 
   // AWS CLI v2、Terraform、Docker（ホスト Docker ソケット経由）を追加

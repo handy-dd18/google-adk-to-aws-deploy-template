@@ -1,11 +1,11 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: Strands app Lambda + API Gateway deployment with AWS SAM
+Description: Structured data agent sample app Lambda + API Gateway deployment with AWS SAM
 
 Parameters:
   ProjectName:
     Type: String
-    Default: strands-aws-template
+    Default: structured-data-agent-sample
   Environment:
     Type: String
     Default: dev

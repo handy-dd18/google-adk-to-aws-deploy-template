@@ -1,10 +1,14 @@
-# google-adk-to-aws-deploy-template
-AWS Strands Agentsを利用してAWS上にAIアプリケーションを構築するテンプレート（SAM + Terraform 分離）
+# structured-data-agent-sample
+構造化データに自然言語でアクセスする AI エージェントのサンプルアプリケーションです。
+
+AWS 上のサーバーレス構成で、ユーザーの自然言語クエリを受け取り、Amazon Athena 経由で S3 Tables（Iceberg）の構造化データを取得・前処理・要約します。アプリ実行基盤は AWS SAM、データ基盤は Terraform で管理します。
 
 ## 目的
-AWS Strands Agentsで構築したマルチエージェントAIアプリを、AWSのマネージドサービス中心（常時稼働サーバーなし）で動かすための設計・実装ガイドです。
+構造化データを対象にした AI エージェントアプリを、AWS のマネージドサービス中心（常時稼働サーバーなし）で動かすための設計・実装サンプルです。
 
-## 想定アーキテクチャ（初期案）
+実装では AWS Strands Agents を使い、データ取得、前処理、回答生成の流れをマルチエージェント構成で分離しています。
+
+## 想定アーキテクチャ
 - **アプリ実行基盤**: AWS Lambda + API Gateway（HTTP API）
 - **認証**: Amazon Cognito（必要に応じて）
 - **AIモデル**: Amazon Bedrock
@@ -38,7 +42,7 @@ AWS Strands Agentsで構築したマルチエージェントAIアプリを、AWS
 
 > `~/.aws` はホスト WSL のものがそのまま参照されます。SSO ログインはホスト側でもコンテナ内でも実行可能です。
 
-## マルチエージェント設計（AWS Strands Agents）
+## マルチエージェント設計
 1. **Orchestrator Agent**
    - ユーザー自然言語を解釈し、各エージェントへタスク分配
 2. **Data Retrieval Agent**

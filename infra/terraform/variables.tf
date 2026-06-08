@@ -13,7 +13,7 @@ variable "aws_region" {
 variable "project_name" {
   description = "プロジェクト名（リソース名のプレフィックスに使用）"
   type        = string
-  default     = "strands-aws-template"
+  default     = "structured-data-agent-sample"
 }
 
 variable "environment" {
