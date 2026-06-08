@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import os
 
-from google.adk.agents import Agent
-from google.adk.models.lite_llm import LiteLlm
+from strands import Agent
+from strands.models import BedrockModel
 
 from tools.python_preprocess_tool import preprocess_data
 
@@ -30,10 +30,12 @@ def create_preprocessing_agent() -> Agent:
     """Preprocessing エージェントを生成して返す。"""
     model_id = os.environ.get("BEDROCK_MODEL_ID", "anthropic.claude-3-5-sonnet-20241022-v2:0")
     aws_region = os.environ.get("AWS_REGION", "ap-northeast-1")
+    model = BedrockModel(model_id=model_id, region_name=aws_region)
 
     return Agent(
         name="preprocessing_agent",
-        model=LiteLlm(model=f"bedrock/{model_id}", aws_region_name=aws_region),
-        instruction=_INSTRUCTION,
+        description="pandas前処理ツールを使って分析可能なデータに整えるエージェント",
+        model=model,
+        system_prompt=_INSTRUCTION,
         tools=[preprocess_data],
     )

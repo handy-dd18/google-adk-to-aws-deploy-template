@@ -24,7 +24,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic" {
 # ─────────────────────────────────────────────
 resource "aws_iam_policy" "lambda_app" {
   name        = "${local.name_prefix}-lambda-app-policy"
-  description = "ADK App Lambda に必要な最小権限"
+  description = "Strands Agent App Lambda に必要な最小権限"
 
   policy = jsonencode({
     Version = "2012-10-17"

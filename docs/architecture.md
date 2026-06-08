@@ -10,7 +10,7 @@ API Gateway (HTTP API / POST /query)
   │
   ▼
 AWS Lambda (Python 3.12)
-  ├── Google ADK Runner
+  ├── AWS Strands Agents Runtime
   │   ├── Orchestrator Agent   ← Amazon Bedrock (Claude)
   │   ├── Data Retrieval Agent ← Amazon Bedrock (Claude) + Athena Tool
   │   ├── Preprocessing Agent  ← Amazon Bedrock (Claude) + Preprocess Tool
@@ -28,7 +28,7 @@ AWS Lambda (Python 3.12)
 ## エージェント間のデータフロー
 
 1. ユーザーが自然言語クエリを POST /query で送信
-2. Lambda が Google ADK Runner を起動
+2. Lambda が AWS Strands Agent を起動
 3. **Orchestrator Agent** がクエリを解釈し、Data Retrieval Agent に転送
 4. **Data Retrieval Agent** が SQL を生成 → `run_athena_query` ツールで Athena 実行 → 結果 JSON
 5. **Preprocessing Agent** が結果 JSON を受け取り → `preprocess_data` ツールで前処理 → 処理済み JSON
@@ -42,7 +42,7 @@ AWS Lambda (Python 3.12)
 | S3 Tables (Iceberg) | 低コストなオープンテーブルフォーマット・スキーマ進化に対応 |
 | Athena | サーバーレスSQL・S3への直接クエリ・スキャン量課金 |
 | Amazon Bedrock | API呼び出し型・モデル管理不要・IAM統合 |
-| Google ADK | マルチエージェントフレームワーク・Python標準 |
+| AWS Strands Agents | AWSネイティブなマルチエージェントフレームワーク |
 
 ## スケーリング考慮事項
 

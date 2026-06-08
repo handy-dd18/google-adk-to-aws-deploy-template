@@ -30,5 +30,5 @@ resource "aws_athena_workgroup" "default" {
 # ─────────────────────────────────────────────
 resource "aws_glue_catalog_database" "main" {
   name        = replace("${local.name_prefix}_db", "-", "_")
-  description = "ADK テンプレート用 Glue データベース（S3 Tables / Iceberg）"
+  description = "Strands Agent テンプレート用 Glue データベース（S3 Tables / Iceberg）"
 }

@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "project_name" {
   description = "プロジェクト名（リソース名のプレフィックスに使用）"
   type        = string
-  default     = "adk-aws-template"
+  default     = "strands-aws-template"
 }
 
 variable "environment" {

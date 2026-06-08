@@ -1,14 +1,10 @@
 """
-ADK マルチエージェントアプリのエントリーポイント。
+AWS Strands Agents マルチエージェントアプリのエントリーポイント。
 Lambda ハンドラーとして動作する。
 """
 from __future__ import annotations
 
 import json
-import os
-
-from google.adk.runners import Runner
-from google.adk.sessions import InMemorySessionService
 
 from agents.orchestrator import create_orchestrator
 
@@ -21,32 +17,28 @@ def handler(event: dict, context: object) -> dict:
     if not user_query:
         return _response(400, {"error": "query フィールドが空です"})
 
-    session_service = InMemorySessionService()
-    session = session_service.create_session(
-        app_name="adk-aws-template",
-        user_id=event.get("requestContext", {}).get("requestId", "anonymous"),
-    )
-
     orchestrator = create_orchestrator()
-    runner = Runner(agent=orchestrator, app_name="adk-aws-template", session_service=session_service)
-
-    result_text = ""
-    for event_item in runner.run(
-        user_id=session.user_id,
-        session_id=session.id,
-        new_message=_text_message(user_query),
-    ):
-        if event_item.is_final_response() and event_item.content:
-            for part in event_item.content.parts:
-                if part.text:
-                    result_text += part.text
+    result = orchestrator(user_query)
+    result_text = _extract_text(result)
 
     return _response(200, {"result": result_text})
 
 
-def _text_message(text: str):
-    from google.genai.types import Content, Part
-    return Content(role="user", parts=[Part(text=text)])
+def _extract_text(result: object) -> str:
+    message = getattr(result, "message", None)
+    if not message:
+        return ""
+
+    content_blocks = message.get("content", []) if isinstance(message, dict) else getattr(message, "content", [])
+    texts: list[str] = []
+    for block in content_blocks:
+        if isinstance(block, dict):
+            text = block.get("text")
+        else:
+            text = getattr(block, "text", None)
+        if text:
+            texts.append(str(text))
+    return "\n".join(texts).strip()
 
 
 def _response(status_code: int, body: dict) -> dict:

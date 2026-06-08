@@ -1,6 +1,6 @@
 """
 Python 前処理ツール。
-Google ADK の FunctionTool として Preprocessing Agent から呼び出される。
+AWS Strands Agent のツールとして Preprocessing Agent から呼び出される。
 """
 from __future__ import annotations
 

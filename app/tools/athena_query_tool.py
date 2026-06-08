@@ -1,6 +1,6 @@
 """
 Athena クエリ実行ツール。
-Google ADK の FunctionTool として Data Retrieval Agent から呼び出される。
+AWS Strands Agent のツールとして Data Retrieval Agent から呼び出される。
 """
 from __future__ import annotations
 

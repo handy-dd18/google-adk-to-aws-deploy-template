@@ -7,26 +7,21 @@ from __future__ import annotations
 import sys
 import types
 from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import MagicMock
 
 # app ディレクトリを検索パスに追加
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "app"))
 
-# google.adk が未インストールの環境向けにスタブを用意
+# strands-agents が未インストールの環境向けにスタブを用意
 for _mod_name in [
-    "google",
-    "google.adk",
-    "google.adk.agents",
-    "google.adk.models",
-    "google.adk.models.lite_llm",
+    "strands",
+    "strands.models",
 ]:
     if _mod_name not in sys.modules:
         sys.modules[_mod_name] = types.ModuleType(_mod_name)
 
-sys.modules["google.adk.agents"].Agent = MagicMock()
-sys.modules["google.adk.models.lite_llm"].LiteLlm = MagicMock()
+sys.modules["strands"].Agent = MagicMock()
+sys.modules["strands.models"].BedrockModel = MagicMock()
 
 
 def test_create_orchestrator_returns_agent():
@@ -37,20 +32,16 @@ def test_create_orchestrator_returns_agent():
             del sys.modules[mod]
 
     mock_agent_cls = MagicMock()
-    mock_litelm_cls = MagicMock()
-    sys.modules["google.adk.agents"].Agent = mock_agent_cls
-    sys.modules["google.adk.models.lite_llm"].LiteLlm = mock_litelm_cls
+    mock_bedrock_model_cls = MagicMock()
+    sys.modules["strands"].Agent = mock_agent_cls
+    sys.modules["strands.models"].BedrockModel = mock_bedrock_model_cls
 
     import agents.orchestrator as orch_mod
 
-    with (
-        patch.object(orch_mod, "create_data_retrieval_agent", return_value=MagicMock()),
-        patch.object(orch_mod, "create_preprocessing_agent", return_value=MagicMock()),
-        patch.object(orch_mod, "create_response_agent", return_value=MagicMock()),
-    ):
-        orch_mod.create_orchestrator()
+    orch_mod.create_orchestrator()
 
+    mock_bedrock_model_cls.assert_called_once()
     mock_agent_cls.assert_called_once()
     kwargs = mock_agent_cls.call_args.kwargs
     assert kwargs["name"] == "orchestrator"
-    assert len(kwargs["sub_agents"]) == 3
+    assert kwargs["tools"] == [orch_mod.run_athena_query, orch_mod.preprocess_data]
