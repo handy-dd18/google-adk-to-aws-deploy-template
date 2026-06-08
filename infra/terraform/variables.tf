@@ -1,3 +1,9 @@
+variable "aws_profile" {
+  description = "AWS CLI プロファイル名（aws sso login --profile <name> で認証したプロファイル）"
+  type        = string
+  default     = "dev"
+}
+
 variable "aws_region" {
   description = "AWSリージョン"
   type        = string

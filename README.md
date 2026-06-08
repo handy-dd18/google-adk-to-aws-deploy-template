@@ -56,16 +56,18 @@ AWS Strands Agentsで構築したマルチエージェントAIアプリを、AWS
    - `curl -X POST http://127.0.0.1:3000/query -H "Content-Type: application/json" -d '{"query":"売上を要約して"}'`
 
 ## AWSデプロイ手順（SAM + Terraform）
-1. データ基盤を Terraform で作成
-   - `cd infra/terraform && terraform init && terraform apply`
-2. Terraform 出力値を確認
+1. AWS SSO でローカル認証（WSL上で実行）
+   - `aws sso login --profile dev`
+2. データ基盤を Terraform で作成
+   - `cd infra/terraform && terraform init && terraform apply -var="aws_profile=dev"`
+3. Terraform 出力値を確認
    - `terraform output athena_workgroup_name`
    - `terraform output glue_database_name`
    - `terraform output athena_results_bucket_name`
    - `terraform output s3_data_bucket_name`
-3. `infra/sam/samconfig.toml` の `parameter_overrides` を更新
+4. `infra/sam/samconfig.toml` の `parameter_overrides` を更新
    - 本番は `CorsAllowOrigins` を実ドメインに制限
-4. SAM で Lambda/API Gateway をデプロイ
+5. SAM で Lambda/API Gateway をデプロイ
    - `cd infra/sam && sam build --template-file template.yaml`
    - `sam deploy --config-env default`
 
