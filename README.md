@@ -16,6 +16,28 @@ AWS Strands Agentsで構築したマルチエージェントAIアプリを、AWS
 
 > EC2などの常時稼働サーバーを避け、従量課金のサーバーレス構成を基本とします。
 
+## 開発環境（VSCode DevContainer）
+
+開発・デプロイ作業は VSCode DevContainer 上で行います。コンテナには Python 3.12 / AWS CLI v2 / AWS SAM CLI / Terraform / Docker が含まれており、ホスト（WSL）の `~/.aws` がマウントされるため `aws sso login` の認証情報をそのまま利用できます。
+
+### 前提条件（WSLホスト側）
+- Docker Desktop（WSL integration 有効）または Docker Engine（WSL2上）
+- VSCode + [Dev Containers 拡張機能](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+### 起動手順
+1. VSCode でリポジトリを開く
+2. コマンドパレット（`Ctrl+Shift+P`）→ `Dev Containers: Reopen in Container`
+3. 初回ビルド後、コンテナ内ターミナルで AWS SSO ログイン
+   ```bash
+   aws sso login --profile dev
+   ```
+4. 動作確認
+   ```bash
+   aws sts get-caller-identity --profile dev
+   ```
+
+> `~/.aws` はホスト WSL のものがそのまま参照されます。SSO ログインはホスト側でもコンテナ内でも実行可能です。
+
 ## マルチエージェント設計（AWS Strands Agents）
 1. **Orchestrator Agent**
    - ユーザー自然言語を解釈し、各エージェントへタスク分配
