@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import os
 import urllib.request
+from urllib.parse import urlparse
 
 import pytest
 
@@ -15,7 +16,9 @@ def test_query_endpoint_on_local_sam():
     base_url = os.environ.get("LOCAL_API_BASE_URL", "").strip()
     if not base_url:
         pytest.skip("LOCAL_API_BASE_URL が未設定のためスキップ")
-    if not (base_url.startswith("http://127.0.0.1") or base_url.startswith("http://localhost")):
+
+    parsed = urlparse(base_url)
+    if parsed.hostname not in {"127.0.0.1", "localhost"}:
         pytest.skip("LOCAL_API_BASE_URL は localhost 系のみ許可")
 
     req = urllib.request.Request(
