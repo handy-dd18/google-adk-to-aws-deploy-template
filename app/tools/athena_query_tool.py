@@ -48,14 +48,17 @@ def run_athena_query(sql: str) -> dict:
 
     client = boto3.client("athena", **client_kwargs)
 
-    start_resp = client.start_query_execution(
-        QueryString=sql,
-        QueryExecutionContext={"Database": database},
-        WorkGroup=workgroup,
-        ResultConfiguration={
+    start_query_kwargs = {
+        "QueryString": sql,
+        "QueryExecutionContext": {"Database": database},
+        "WorkGroup": workgroup,
+    }
+    if results_bucket:
+        start_query_kwargs["ResultConfiguration"] = {
             "OutputLocation": f"s3://{results_bucket}/results/"
-        } if results_bucket else {},
-    )
+        }
+
+    start_resp = client.start_query_execution(**start_query_kwargs)
     query_id = start_resp["QueryExecutionId"]
 
     # クエリ完了まで待機（最大 60 イテレーション × 2秒 = 120 秒）

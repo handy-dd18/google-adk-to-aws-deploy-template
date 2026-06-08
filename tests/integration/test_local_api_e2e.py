@@ -15,6 +15,8 @@ def test_query_endpoint_on_local_sam():
     base_url = os.environ.get("LOCAL_API_BASE_URL", "").strip()
     if not base_url:
         pytest.skip("LOCAL_API_BASE_URL が未設定のためスキップ")
+    if not (base_url.startswith("http://127.0.0.1") or base_url.startswith("http://localhost")):
+        pytest.skip("LOCAL_API_BASE_URL は localhost 系のみ許可")
 
     req = urllib.request.Request(
         url=f"{base_url}/query",
@@ -23,7 +25,7 @@ def test_query_endpoint_on_local_sam():
         method="POST",
     )
 
-    with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310
+    with urllib.request.urlopen(req, timeout=10) as resp:
         body = json.loads(resp.read().decode("utf-8"))
         assert resp.status == 200
         assert "result" in body
