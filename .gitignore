@@ -1,3 +1,18 @@
+# Lambda ビルド成果物
+.build/
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
