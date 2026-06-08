@@ -11,7 +11,7 @@ import time
 import boto3
 
 _POLL_INTERVAL = 2  # 秒
-_MAX_POLL_ITERATIONS = 60
+_MAX_POLL_ITERATIONS = 50
 _MAX_RESULT_ROWS = 1000
 
 
@@ -61,7 +61,7 @@ def run_athena_query(sql: str) -> dict:
     start_resp = client.start_query_execution(**start_query_kwargs)
     query_id = start_resp["QueryExecutionId"]
 
-    # クエリ完了まで待機（最大 60 イテレーション × 2秒 = 120 秒）
+    # クエリ完了まで待機（最大 50 イテレーション × 2秒 = 100 秒）
     for _ in range(_MAX_POLL_ITERATIONS):
         status_resp = client.get_query_execution(QueryExecutionId=query_id)
         state = status_resp["QueryExecution"]["Status"]["State"]

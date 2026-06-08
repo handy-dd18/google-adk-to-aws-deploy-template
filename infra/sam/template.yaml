@@ -99,6 +99,7 @@ Resources:
               Action:
                 - bedrock:InvokeModel
                 - bedrock:InvokeModelWithResponseStream
+              # foundation-model ARN は account セグメントなし（AWS仕様）
               Resource: !Sub "arn:aws:bedrock:${AWS::Region}::foundation-model/${BedrockModelId}"
             - Sid: GlueCatalogRead
               Effect: Allow
