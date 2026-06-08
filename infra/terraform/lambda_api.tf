@@ -42,7 +42,7 @@ resource "aws_apigatewayv2_api" "app" {
   protocol_type = "HTTP"
 
   cors_configuration {
-    allow_origins = ["*"] # 本番では制限すること
+    allow_origins = var.cors_allow_origins
     allow_methods = ["POST"]
     allow_headers = ["Content-Type", "Authorization"]
     max_age       = 300

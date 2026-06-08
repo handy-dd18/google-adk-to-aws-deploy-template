@@ -72,7 +72,7 @@ resource "aws_iam_policy" "lambda_app" {
         ]
         Resource = "arn:aws:bedrock:${var.aws_region}::foundation-model/${var.bedrock_model_id}"
       },
-      # Glue Data Catalog（Athena が利用）
+      # Glue Data Catalog（Athena が利用）- 特定データベース/テーブルに限定
       {
         Sid    = "GlueCatalog"
         Effect = "Allow"
@@ -81,7 +81,11 @@ resource "aws_iam_policy" "lambda_app" {
           "glue:GetTable",
           "glue:GetPartitions"
         ]
-        Resource = "*"
+        Resource = [
+          "arn:aws:glue:${var.aws_region}:${data.aws_caller_identity.current.account_id}:catalog",
+          "arn:aws:glue:${var.aws_region}:${data.aws_caller_identity.current.account_id}:database/${aws_glue_catalog_database.main.name}",
+          "arn:aws:glue:${var.aws_region}:${data.aws_caller_identity.current.account_id}:table/${aws_glue_catalog_database.main.name}/*"
+        ]
       }
     ]
   })

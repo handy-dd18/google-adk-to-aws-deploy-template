@@ -43,3 +43,9 @@ variable "athena_workgroup_bytes_scanned_limit" {
   type        = number
   default     = 1073741824
 }
+
+variable "cors_allow_origins" {
+  description = "API Gateway CORS で許可するオリジンのリスト。本番では特定ドメインに制限してください。"
+  type        = list(string)
+  default     = ["*"]
+}

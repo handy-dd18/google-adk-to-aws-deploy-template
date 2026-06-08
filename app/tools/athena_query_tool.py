@@ -43,8 +43,8 @@ def run_athena_query(sql: str) -> dict:
     )
     query_id = start_resp["QueryExecutionId"]
 
-    # クエリ完了まで待機
-    for _ in range(60):  # 最大 120 秒
+    # クエリ完了まで待機（最大 60 イテレーション × 2秒 = 120 秒）
+    for _ in range(60):
         status_resp = client.get_query_execution(QueryExecutionId=query_id)
         state = status_resp["QueryExecution"]["Status"]["State"]
         if state == "SUCCEEDED":
