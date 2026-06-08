@@ -1,0 +1,58 @@
+version = 0.1
+
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "strands-aws-template-dev-app"
+resolve_s3 = true
+s3_prefix = "strands-aws-template-dev-app"
+region = "ap-northeast-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = [
+  "ProjectName=strands-aws-template",
+  "Environment=dev",
+  "AppExecutionMode=cloud",
+  "AthenaWorkgroupName=REPLACE_WITH_TERRAFORM_OUTPUT",
+  "AthenaDatabaseName=REPLACE_WITH_TERRAFORM_OUTPUT",
+  "AthenaResultsBucketName=REPLACE_WITH_TERRAFORM_OUTPUT",
+  "DataBucketName=REPLACE_WITH_TERRAFORM_OUTPUT",
+]
+
+[stg]
+[stg.deploy]
+[stg.deploy.parameters]
+stack_name = "strands-aws-template-stg-app"
+resolve_s3 = true
+s3_prefix = "strands-aws-template-stg-app"
+region = "ap-northeast-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = [
+  "ProjectName=strands-aws-template",
+  "Environment=stg",
+  "AppExecutionMode=cloud",
+  "AthenaWorkgroupName=REPLACE_WITH_TERRAFORM_OUTPUT",
+  "AthenaDatabaseName=REPLACE_WITH_TERRAFORM_OUTPUT",
+  "AthenaResultsBucketName=REPLACE_WITH_TERRAFORM_OUTPUT",
+  "DataBucketName=REPLACE_WITH_TERRAFORM_OUTPUT",
+]
+
+[prod]
+[prod.deploy]
+[prod.deploy.parameters]
+stack_name = "strands-aws-template-prod-app"
+resolve_s3 = true
+s3_prefix = "strands-aws-template-prod-app"
+region = "ap-northeast-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = [
+  "ProjectName=strands-aws-template",
+  "Environment=prod",
+  "AppExecutionMode=cloud",
+  "AthenaWorkgroupName=REPLACE_WITH_TERRAFORM_OUTPUT",
+  "AthenaDatabaseName=REPLACE_WITH_TERRAFORM_OUTPUT",
+  "AthenaResultsBucketName=REPLACE_WITH_TERRAFORM_OUTPUT",
+  "DataBucketName=REPLACE_WITH_TERRAFORM_OUTPUT",
+]

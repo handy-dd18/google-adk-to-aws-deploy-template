@@ -5,8 +5,10 @@ Lambda ハンドラーとして動作する。
 from __future__ import annotations
 
 import json
+import os
 
 from agents.orchestrator import create_orchestrator
+from tools.athena_query_tool import run_athena_query
 
 
 def handler(event: dict, context: object) -> dict:
@@ -17,10 +19,33 @@ def handler(event: dict, context: object) -> dict:
     if not user_query:
         return _response(400, {"error": "query フィールドが空です"})
 
+    if _is_local_mode():
+        return _handle_local_mode(user_query)
+
     orchestrator = create_orchestrator()
     result = orchestrator(user_query)
     result_text = _extract_text(result)
 
+    return _response(200, {"result": result_text})
+
+
+def _is_local_mode() -> bool:
+    return os.environ.get("APP_EXECUTION_MODE", "cloud").lower() == "local"
+
+
+def _handle_local_mode(user_query: str) -> dict:
+    sql = os.environ.get("LOCAL_MODE_SQL", "").strip()
+    if not sql:
+        result_text = f"[local-mode] queryを受信: {user_query}"
+        return _response(200, {"result": result_text})
+
+    query_result = run_athena_query(sql)
+    if "error" in query_result:
+        result_text = f"[local-mode] queryを受信: {user_query}\nAthenaスタブ実行エラー: {query_result['error']}"
+        return _response(200, {"result": result_text})
+
+    row_count = query_result.get("row_count", 0)
+    result_text = f"[local-mode] queryを受信: {user_query}\nAthenaスタブ実行成功: {row_count} rows"
     return _response(200, {"result": result_text})
 
 

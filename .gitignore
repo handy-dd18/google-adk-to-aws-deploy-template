@@ -64,6 +64,8 @@ coverage.xml
 *.py.cover
 .hypothesis/
 .pytest_cache/
+.aws-sam/
+infra/sam/local-env.json
 cover/
 
 # Translations

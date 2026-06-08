@@ -50,3 +50,35 @@ def test_query_failed():
         mock_boto3.client.return_value = _make_boto3_mock(query_state="FAILED")
         result = run_athena_query("SELECT 1")
     assert "error" in result
+
+
+def test_local_mode_uses_floci_endpoint(monkeypatch):
+    monkeypatch.setenv("APP_EXECUTION_MODE", "local")
+    monkeypatch.setenv("FLOCI_ATHENA_ENDPOINT_URL", "http://localhost:4566")
+
+    with patch("tools.athena_query_tool.boto3") as mock_boto3:
+        mock_boto3.client.return_value = _make_boto3_mock()
+        run_athena_query("SELECT 1")
+
+    _, kwargs = mock_boto3.client.call_args
+    assert kwargs["endpoint_url"] == "http://localhost:4566"
+
+
+def test_local_mode_returns_stub_rows(monkeypatch):
+    monkeypatch.setenv("APP_EXECUTION_MODE", "local")
+    monkeypatch.setenv("LOCAL_ATHENA_STUB_ROWS", '[{"col1":"stub","col2":"1"}]')
+
+    with patch("tools.athena_query_tool.boto3") as mock_boto3:
+        result = run_athena_query("SELECT 1")
+
+    assert result["row_count"] == 1
+    assert result["rows"][0]["col1"] == "stub"
+    mock_boto3.client.assert_not_called()
+
+
+def test_local_mode_invalid_stub_json_returns_error(monkeypatch):
+    monkeypatch.setenv("APP_EXECUTION_MODE", "local")
+    monkeypatch.setenv("LOCAL_ATHENA_STUB_ROWS", "{bad-json")
+
+    result = run_athena_query("SELECT 1")
+    assert "error" in result
