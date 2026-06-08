@@ -1,0 +1,8 @@
+services:
+  floci:
+    image: ${FLOCI_IMAGE:-ghcr.io/floci-io/floci:latest}
+    container_name: floci
+    ports:
+      - "${FLOCI_PORT:-4566}:4566"
+    environment:
+      AWS_DEFAULT_REGION: ${AWS_REGION:-ap-northeast-1}

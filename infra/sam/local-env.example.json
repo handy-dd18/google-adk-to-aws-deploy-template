@@ -1,0 +1,13 @@
+{
+  "AppFunction": {
+    "APP_EXECUTION_MODE": "local",
+    "AWS_REGION": "ap-northeast-1",
+    "BEDROCK_MODEL_ID": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+    "ATHENA_WORKGROUP": "local-workgroup",
+    "ATHENA_DATABASE": "local_db",
+    "ATHENA_RESULTS_BUCKET": "local-athena-results",
+    "FLOCI_ATHENA_ENDPOINT_URL": "http://host.docker.internal:4566",
+    "LOCAL_ATHENA_STUB_ROWS": "[{\"sales\":\"1200\",\"region\":\"tokyo\"}]",
+    "LOCAL_MODE_SQL": "SELECT * FROM sample_table LIMIT 10"
+  }
+}

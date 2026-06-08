@@ -1,0 +1,139 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Strands app Lambda + API Gateway deployment with AWS SAM
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: strands-aws-template
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - stg
+      - prod
+  BedrockModelId:
+    Type: String
+    Default: anthropic.claude-3-5-sonnet-20241022-v2:0
+  AppExecutionMode:
+    Type: String
+    Default: cloud
+    AllowedValues:
+      - cloud
+      - local
+  FlociAthenaEndpointUrl:
+    Type: String
+    Default: ""
+  LocalAthenaStubRows:
+    Type: String
+    Default: ""
+  LocalModeSql:
+    Type: String
+    Default: ""
+  AthenaWorkgroupName:
+    Type: String
+  AthenaDatabaseName:
+    Type: String
+  AthenaResultsBucketName:
+    Type: String
+  DataBucketName:
+    Type: String
+  CorsAllowOrigins:
+    Type: CommaDelimitedList
+    Default: "http://localhost:3000"
+
+Resources:
+  QueryApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Name: !Sub "${ProjectName}-${Environment}-api"
+      CorsConfiguration:
+        AllowHeaders:
+          - Content-Type
+          - Authorization
+        AllowMethods:
+          - POST
+        AllowOrigins: !Ref CorsAllowOrigins
+
+  AppFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${ProjectName}-${Environment}-app"
+      CodeUri: ../../app
+      Handler: main.handler
+      Runtime: python3.12
+      Timeout: 120
+      MemorySize: 512
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Sid: AthenaQuery
+              Effect: Allow
+              Action:
+                - athena:StartQueryExecution
+                - athena:GetQueryExecution
+                - athena:GetQueryResults
+                - athena:StopQueryExecution
+                - athena:ListQueryExecutions
+              Resource: !Sub "arn:aws:athena:${AWS::Region}:${AWS::AccountId}:workgroup/${AthenaWorkgroupName}"
+            - Sid: S3DataRead
+              Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:ListBucket
+              Resource:
+                - !Sub "arn:aws:s3:::${DataBucketName}"
+                - !Sub "arn:aws:s3:::${DataBucketName}/*"
+            - Sid: S3AthenaResults
+              Effect: Allow
+              Action:
+                - s3:PutObject
+                - s3:GetObject
+                - s3:DeleteObject
+              Resource:
+                - !Sub "arn:aws:s3:::${AthenaResultsBucketName}"
+                - !Sub "arn:aws:s3:::${AthenaResultsBucketName}/*"
+            - Sid: BedrockInvoke
+              Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+                - bedrock:InvokeModelWithResponseStream
+              # foundation-model ARN は account セグメントなし（AWS仕様）
+              Resource: !Sub "arn:aws:bedrock:${AWS::Region}::foundation-model/${BedrockModelId}"
+            - Sid: GlueCatalogRead
+              Effect: Allow
+              Action:
+                - glue:GetDatabase
+                - glue:GetTable
+                - glue:GetPartitions
+              Resource:
+                - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:catalog"
+                - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:database/${AthenaDatabaseName}"
+                - !Sub "arn:aws:glue:${AWS::Region}:${AWS::AccountId}:table/${AthenaDatabaseName}/*"
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
+          BEDROCK_MODEL_ID: !Ref BedrockModelId
+          APP_EXECUTION_MODE: !Ref AppExecutionMode
+          ATHENA_WORKGROUP: !Ref AthenaWorkgroupName
+          ATHENA_DATABASE: !Ref AthenaDatabaseName
+          ATHENA_RESULTS_BUCKET: !Ref AthenaResultsBucketName
+          FLOCI_ATHENA_ENDPOINT_URL: !Ref FlociAthenaEndpointUrl
+          LOCAL_ATHENA_STUB_ROWS: !Ref LocalAthenaStubRows
+          LOCAL_MODE_SQL: !Ref LocalModeSql
+      Events:
+        QueryEndpoint:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref QueryApi
+            Path: /query
+            Method: POST
+
+Outputs:
+  ApiEndpoint:
+    Description: HTTP API endpoint URL
+    Value: !Sub "https://${QueryApi}.execute-api.${AWS::Region}.amazonaws.com"
+  LambdaFunctionName:
+    Description: Lambda function name
+    Value: !Ref AppFunction

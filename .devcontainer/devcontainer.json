@@ -1,0 +1,45 @@
+{
+  "name": "strands-aws-template",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+
+  // AWS CLI v2、Terraform、Docker（ホスト Docker ソケット経由）を追加
+  "features": {
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false,
+      "installDockerBuildx": false,
+      "installDockerComposeSwitch": false
+    }
+  },
+
+  // ホスト（WSL）の ~/.aws をコンテナにマウントし、SSO 認証情報を共有
+  "mounts": [
+    "source=${localEnv:HOME}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached"
+  ],
+
+  // コンテナ起動後にプロジェクト依存関係と AWS SAM CLI をインストール
+  "postCreateCommand": "pip install --upgrade pip && pip install -e . && pip install 'aws-sam-cli>=1.0,<2.0'",
+
+  "remoteUser": "vscode",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "amazonwebservices.aws-toolkit-vscode",
+        "hashicorp.terraform",
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.terminal.activateEnvironment": false,
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "aws.profile": "dev"
+      }
+    }
+  }
+}
