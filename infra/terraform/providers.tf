@@ -11,7 +11,7 @@ terraform {
   # リモートステートを利用する場合はここで設定
   # backend "s3" {
   #   bucket         = "your-tfstate-bucket"
-  #   key            = "adk-template/terraform.tfstate"
+  #   key            = "strands-template/terraform.tfstate"
   #   region         = "ap-northeast-1"
   #   encrypt        = true
   #   dynamodb_table = "terraform-state-lock"
