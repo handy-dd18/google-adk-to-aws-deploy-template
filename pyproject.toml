@@ -16,3 +16,6 @@ dependencies = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "integration: local integration tests requiring running services",
+]

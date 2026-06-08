@@ -2,7 +2,7 @@
 
 ## IAM 最小権限
 
-- Lambda 実行ロールは用途ごとに分離 (`iam.tf` 参照)
+- Lambda 実行ロールは AWS SAM テンプレート (`infra/sam/template.yaml`) で最小権限を定義
 - Bedrock: `bedrock:InvokeModel` のみ、特定モデル ARN に限定
 - Athena: 指定 Workgroup・データベースのみ
 - S3: 読み取り専用 (データバケット)、書き込みは結果バケットのみ
